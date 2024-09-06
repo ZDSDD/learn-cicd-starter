@@ -27,5 +27,19 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 		return
 	}
 	w.WriteHeader(code)
-	w.Write(dat)
+	n, err := w.Write(dat)
+
+	if err != nil {
+		// Handle the error here, such as logging it or sending an error response
+		http.Error(w, "Failed to write response", http.StatusInternalServerError)
+		return
+	}
+
+	// Optionally, check the number of bytes written
+	if n != len(dat) {
+		// Handle case where not all data was written
+		// This is rare, but it could happen in some cases
+		http.Error(w, "Incomplete data written", http.StatusInternalServerError)
+		return
+	}
 }
