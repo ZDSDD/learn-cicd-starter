@@ -8,6 +8,8 @@ jobs:
     deploy:
         name: Deploy
         runs-on: ubuntu-latest
+        env:
+            DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
         steps:
           - name: Check out code
@@ -20,6 +22,12 @@ jobs:
             
           - name: Build app
             run:  ./scripts/buildprod.sh
+          
+          - name: Migrate database
+            run: ./scripts/migrateup.sh
+
+          - name: Configure gc
+            run: echo "Configuring account ... "
 
           - name: Deploy to gc
             run: echo "gcloud builds submit"
